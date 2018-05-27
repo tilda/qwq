@@ -8,6 +8,7 @@
 
 if [[ ! -f "$HOME/.config/qwq-token" ]]; then
   echo "Error: ~/.config/qwq-token not found."
+  exit
 fi
 
 # --- configurables
@@ -24,6 +25,20 @@ SAVE_PATH="$SCREENSHOT_DIRECTORY/$(date +$DATE_FORMAT).png"
 # vanity url to output
 VANITY="owo.sh"
 # ---
+
+
+if [[ $# != 0 ]]; then
+  file=$1
+  echo "Uploading..."
+  OWO_OUTPUT=$(curl -s -F "files[]=@\"$file\"" https://api.awau.moe/upload/pomf?key="$TOKEN" \
+                -H "User-Agent: $USER_AGENT")
+  echo "Uploaded! $OWO_OUTPUT"
+  FILE=$(echo "$OWO_OUTPUT" | $JQ_PATH -r ".files[0].url")
+  URL="https://$VANITY/$FILE"
+  echo -n "$URL" | pbcopy
+  echo "Copied to clipboard: $URL"
+  exit 0
+fi
 
 mkdir -p "$SCREENSHOT_DIRECTORY"
 
